@@ -45,9 +45,7 @@
       color: white;
     }
 
-    .chip, .ghost-btn {
-      min-height: 44px; /* recommended minimum for touch targets */
-    }
+
 
     .feed-wrapper {
       max-width: 720px;
@@ -129,7 +127,6 @@
 
   <script>
     const feedUrls = [
-      'https://www.theverge.com/rss/index.xml',
       'https://www.hearingthings.co/archive/rss/',
       'https://www.ft.com/myft/following/bc85524b-7be0-4e1f-8171-e13479a74c93.rss',
       'https://stereogum.com/feed/',
@@ -164,7 +161,8 @@
     }
 
     const fetchFeed = async (url) => {
-      const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
+      const cacheBuster = `&_=${Date.now()}`;
+      const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}${cacheBuster}`;
       try {
         const response = await fetch(apiUrl);
         const data = await response.json();
