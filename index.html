@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RSS Feed</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+    }
+
+    #filter-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      z-index: 1000;
+      display: flex;
+      overflow-x: auto;
+      gap: 0.5rem;
+      padding: 1rem;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .chip {
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      background: #eee;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .chip.active {
+      background: #444;
+      color: white;
+    }
+
+    .feed-wrapper {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 6rem 1rem 2rem;
+    }
+
+    .item {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .item img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      display: block;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+    }
+
+    .item h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .item p {
+      margin-bottom: 0.5rem;
+    }
+
+    .item .meta {
+      font-size: 0.9rem;
+      color: #777;
+    }
+
+    .footer {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ghost-btn {
+      background: none;
+      border: 1px solid #ccc;
+      color: #444;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .ghost-btn:hover {
+      border-color: #000;
+      color: #000;
+    }
+
+    .badge {
+      background-color: #444;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="filter-bar"></div>
+  <div class="feed-wrapper">
+    <div id="rss-feed">Loading...</div>
+  </div>
+
+  <script>
+    const feedUrls = [
+      'https://www.theverge.com/rss/index.xml',
+      'https://www.hearingthings.co/archive/rss/',
+      'https://www.ft.com/myft/following/bc85524b-7be0-4e1f-8171-e13479a74c93.rss',
+      'https://stereogum.com/feed/',
+      'https://www.highsnobiety.com/feeds/rss'
+    ];
+
+    const feedItems = [];
+    const feedTitles = new Set();
+    let activeFilters = new Set(); // empty = "All"
+
+    const extractImageFromContent = (content) => {
+      const match = content.match(/<img[^>]+src="([^">]+)"/i);
+      return match ? match[1] : null;
+    };
+
+    const removeImagesFromHTML = html => html.replace(/<img[^>]*>/gi, '');
+
+    function getRelativeTime(pubDateString) {
+      const utcDate = new Date(pubDateString + ' UTC');
+      const now = new Date();
+      const diffMs = now.getTime() - utcDate.getTime();
+      const diffSec = Math.floor(diffMs / 1000);
+      const diffMin = Math.floor(diffSec / 60);
+      const diffHr = Math.floor(diffMin / 60);
+      const diffDay = Math.floor(diffHr / 24);
+
+      if (diffSec < 60) return 'just now';
+      if (diffMin < 60) return `${diffMin} minute${diffMin !== 1 ? 's' : ''} ago`;
+      if (diffHr < 24) return `${diffHr} hour${diffHr !== 1 ? 's' : ''} ago`;
+      if (diffDay < 7) return `${diffDay} day${diffDay !== 1 ? 's' : ''} ago`;
+      return utcDate.toLocaleDateString();
+    }
+
+    const fetchFeed = async (url) => {
+      const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        return data.items.map(item => ({
+          ...item,
+          sourceTitle: data.feed.title
+        }));
+      } catch (error) {
+        console.error('Error fetching feed:', url, error);
+        return [];
+      }
+    };
+
+    const renderFilterBar = () => {
+      const bar = document.getElementById('filter-bar');
+      bar.innerHTML = '';
+
+      const sources = ['All', ...Array.from(feedTitles)];
+
+      sources.forEach(title => {
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+        chip.textContent = title;
+        if (activeFilters.has(title) || (activeFilters.size === 0 && title === 'All')) {
+          chip.classList.add('active');
+        }
+
+        chip.addEventListener('click', () => {
+          if (title === 'All') {
+            activeFilters.clear();
+          } else {
+            if (activeFilters.has(title)) {
+              activeFilters.delete(title);
+            } else {
+              activeFilters.add(title);
+            }
+          }
+          renderFilterBar();
+          renderFeed();
+        });
+
+        bar.appendChild(chip);
+      });
+    };
+
+    const renderFeed = () => {
+      const container = document.getElementById('rss-feed');
+      container.innerHTML = '';
+
+      let filtered = [...feedItems];
+      if (activeFilters.size > 0) {
+        filtered = filtered.filter(item => activeFilters.has(item.sourceTitle));
+      }
+
+      filtered.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+
+      filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item';
+
+        const imageUrl = item.thumbnail || extractImageFromContent(item.content || '');
+        const relativeTime = getRelativeTime(item.pubDate);
+        const descriptionClean = removeImagesFromHTML(item.description || '');
+
+        div.innerHTML = `
+          ${imageUrl ? `<img src="${imageUrl}" alt="Feed Image">` : ''}
+          <h2>${item.title}</h2>
+          <p>${descriptionClean}</p>
+          <div class="meta">
+            <span class="date">${relativeTime}</span>
+          </div>
+          <div class="footer">
+            <button class="ghost-btn" onclick="window.open('${item.link}', '_blank')">
+  Open
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M11 4C11.5523 4 12 4.44772 12 5V12H10V7.41406L4.70703 12.707L3.29297 11.293L8.58594 6H4V4H11Z"/>
+  </svg>
+</button>
+            <span class="badge">${item.sourceTitle}</span>
+          </div>
+        `;
+
+        container.appendChild(div);
+      });
+    };
+
+    const loadFeeds = async () => {
+      for (const url of feedUrls) {
+        const items = await fetchFeed(url);
+        items.forEach(item => {
+          feedItems.push(item);
+          feedTitles.add(item.sourceTitle);
+        });
+      }
+      renderFilterBar();
+      renderFeed();
+    };
+
+    loadFeeds();
+  </script>
+</body>
+</html>
