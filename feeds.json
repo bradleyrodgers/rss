@@ -8,6 +8,14 @@
     {
       "title": "Stereogum",
       "url": "https://stereogum.com/feed/"
+    },
+    {
+      "title": "9to5 Google",
+      "url": "https://9to5google.com/feed/"
+    },
+    {
+      "title": "Mac Rumours",
+      "url": "https://feeds.macrumors.com/MacRumors-All"
     }
   ]
 }
