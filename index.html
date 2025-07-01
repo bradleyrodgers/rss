@@ -163,7 +163,6 @@
       line-height: 16px;
       text-transform: uppercase;
       transition: all 0.2s;
-      scroll-snap-align: start;
     }
 
     .chip.active {
@@ -204,6 +203,15 @@
     .item .meta {
       font-size: 16px;
       color: rgba(0, 0, 0, 0.5);
+    }
+
+    .item h2 a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .item h2 a:hover {
+      text-decoration: none;
     }
 
     .footer {
@@ -377,19 +385,13 @@
 
         div.innerHTML = `
           ${imageUrl ? `<img src="${imageUrl}" alt="Feed Image">` : ''}
-          <h2>${item.title}</h2>
+          <h2><a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a></h2>
           <div class="meta">
             <span class="date">${relativeTime}</span>
           </div>
           <p class="description">${descriptionClean}</p>
           <button class="toggle-description">Show more</button>
           <div class="footer">
-            <button class="ghost-btn" onclick="window.open('${item.link}', '_blank')">
-  Open
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-    <path d="M11 4C11.5523 4 12 4.44772 12 5V12H10V7.41406L4.70703 12.707L3.29297 11.293L8.58594 6H4V4H11Z"/>
-  </svg>
-</button>
             <span class="chip source-badge" data-source="${item.sourceTitle}">${item.sourceTitle}</span>
           </div>
         `;
