@@ -139,7 +139,14 @@
       gap: 12px;
       padding: 24px;
       -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
       scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    #filter-bar::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
     }
 
     .chip {
