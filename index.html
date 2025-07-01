@@ -146,7 +146,8 @@
     }
 
     #filter-bar::-webkit-scrollbar {
-      display: none; /* Chrome, Safari, Opera */
+      display: none;
+      /* Chrome, Safari, Opera */
     }
 
     .chip {
@@ -206,7 +207,7 @@
     }
 
     .footer {
-      margin-top: 16px;
+      margin-top: 32px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -240,12 +241,35 @@
       color: #EBE9E6;
     }
 
-    .badge {
-      background-color: #444;
-      color: white;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
+    .description {
+      display: -webkit-box;
+      line-clamp: 4;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .description.expanded {
+      line-clamp: unset;
+      -webkit-line-clamp: unset;
+      overflow: visible;
+    }
+
+    .toggle-description {
+      background: none;
+      border: none;
+      color: #1A1918;
+      font-size: 16px;
+      font-weight: 400;
+      font-family: jetbrainsmono, monospace;
+      margin-top: 4px;
+      padding: 0;
+      cursor: pointer;
+      text-decoration-line: underline;
+      text-decoration-style: wavy;
+      line-height: 2;
+      text-underline-offset: 4px;
     }
   </style>
 </head>
@@ -357,7 +381,8 @@
           <div class="meta">
             <span class="date">${relativeTime}</span>
           </div>
-          <p>${descriptionClean}</p>
+          <p class="description">${descriptionClean}</p>
+          <button class="toggle-description">Show more</button>
           <div class="footer">
             <button class="ghost-btn" onclick="window.open('${item.link}', '_blank')">
   Open
@@ -370,6 +395,19 @@
         `;
 
         container.appendChild(div);
+
+        const toggleButton = div.querySelector('.toggle-description');
+        const descriptionEl = div.querySelector('.description');
+
+        // Only show toggle button if description is actually clamped
+        if (descriptionEl.scrollHeight <= descriptionEl.offsetHeight) {
+          toggleButton.style.display = 'none';
+        } else {
+          toggleButton.addEventListener('click', () => {
+            const expanded = descriptionEl.classList.toggle('expanded');
+            toggleButton.textContent = expanded ? 'Show less' : 'Show more';
+          });
+        }
 
         div.querySelector('.source-badge')?.addEventListener('click', (e) => {
           const source = e.target.getAttribute('data-source');
