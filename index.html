@@ -1,16 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>RSS Feed</title>
   <style>
+    @font-face {
+      font-family: 'jetbrainsmono';
+      src: url('./fonts/jetbrainsmono-extralight.woff2') format('woff2');
+      font-weight: 200;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'jetbrainsmono';
+      src: url('./fonts/jetbrainsmono-extralightitalic.woff2') format('woff2');
+      font-weight: 200;
+      font-style: italic;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'jetbrainsmono';
+      src: url('./fonts/jetbrainsmono-light.woff2') format('woff2');
+      font-weight: 300;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'jetbrainsmono';
+      src: url('./fonts/jetbrainsmono-lightitalic.woff2') format('woff2');
+      font-weight: 300;
+      font-style: italic;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'jetbrainsmono';
+      src: url('./fonts/jetbrainsmono-regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'jetbrainsmono';
+      src: url('./fonts/jetbrainsmono-italic.woff2') format('woff2');
+      font-weight: 400;
+      font-style: italic;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'jetbrainsmono';
+      src: url('./fonts/jetbrainsmono-medium.woff2') format('woff2');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'jetbrainsmono';
+      src: url('./fonts/jetbrainsmono-mediumitalic.woff2') format('woff2');
+      font-weight: 500;
+      font-style: italic;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'jetbrainsmono';
+      src: url('./fonts/jetbrainsmono-semibold.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'jetbrainsmono';
+      src: url('./fonts/jetbrainsmono-semibolditalic.woff2') format('woff2');
+      font-weight: 600;
+      font-style: italic;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'jetbrainsmono';
+      src: url('./fonts/jetbrainsmono-bold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'jetbrainsmono';
+      src: url('./fonts/jetbrainsmono-bolditalic.woff2') format('woff2');
+      font-weight: 700;
+      font-style: italic;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'jetbrainsmono';
+      src: url('./fonts/jetbrainsmono-extrabold.woff2') format('woff2');
+      font-weight: 800;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'jetbrainsmono';
+      src: url('./fonts/jetbrainsmono-extrabolditalic.woff2') format('woff2');
+      font-weight: 800;
+      font-style: italic;
+      font-display: swap;
+    }
+
     body {
-      font-family: sans-serif;
+      font-family: jetbrainsmono;
       font-size: 16px;
+      font-weight: 400;
+      line-height: 2.0;
       margin: 0;
       padding: 0;
-      background: #f9f9f9;
+      background: #EBE9E6;
     }
 
     #filter-bar {
@@ -18,47 +133,44 @@
       top: 0;
       left: 0;
       right: 0;
-      background: white;
       z-index: 1000;
       display: flex;
       overflow-x: auto;
-      gap: 0.5rem;
-      padding: 1rem 1rem 0.5rem;
-      border-bottom: 1px solid #ddd;
+      gap: 12px;
+      padding: 24px;
       -webkit-overflow-scrolling: touch;
       scroll-snap-type: x mandatory;
     }
 
     .chip {
-      padding: 0.6rem 1.2rem;
-      border-radius: 999px;
-      background: #eee;
+      padding: 8px 24px;
+      border-radius: 99px;
+      background: rgba(0, 0, 0, 0.05);
+      color: rgba(0, 0, 0, 0.2);
       cursor: pointer;
       white-space: nowrap;
-      font-size: 1rem;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      line-height: 16px;
+      text-transform: uppercase;
       transition: all 0.2s;
       scroll-snap-align: start;
     }
 
     .chip.active {
-      background: #444;
+      background: #1A1918;
       color: white;
     }
-
-
 
     .feed-wrapper {
       max-width: 720px;
       margin: 0 auto;
-      padding: 6rem 1rem 2rem;
+      padding: 120px 24px;
     }
 
     .item {
-      background: white;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      margin-bottom: 120px;
     }
 
     .item img {
@@ -66,26 +178,28 @@
       height: 120px;
       object-fit: cover;
       display: block;
-      margin-bottom: 1rem;
+      margin-bottom: 24px;
       border-radius: 8px;
     }
 
     .item h2 {
-      margin: 0 0 0.5rem;
-      font-size: 1.2rem;
+      margin: 0 0 8px;
+      font-family: jetbrainsmono, monospace;
+      font-size: 16px;
+      font-weight: 700;
     }
 
     .item p {
-      margin-bottom: 0.5rem;
+      margin-bottom: 8px;
     }
 
     .item .meta {
-      font-size: 0.9rem;
-      color: #777;
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.5);
     }
 
     .footer {
-      margin-top: 1rem;
+      margin-top: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -93,21 +207,30 @@
 
     .ghost-btn {
       background: none;
-      border: 1px solid #ccc;
-      color: #444;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-size: 1rem;
+      border: 1.5px solid #1A1918;
+      color: #1A1918;
+      padding: 6.5px 18px 6.5px 24px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-family: jetbrainsmono, monospace;
+      font-weight: 700;
+      line-height: 16px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 6px;
+      text-transform: uppercase;
       transition: all 0.2s ease;
     }
 
+    .ghost-btn svg {
+      position: relative;
+      top: -1px;
+    }
+
     .ghost-btn:hover {
-      border-color: #000;
-      color: #000;
+      background-color: #1A1918;
+      color: #EBE9E6;
     }
 
     .badge {
@@ -119,6 +242,7 @@
     }
   </style>
 </head>
+
 <body>
   <div id="filter-bar"></div>
   <div class="feed-wrapper">
@@ -126,12 +250,6 @@
   </div>
 
   <script>
-    const feedUrls = [
-      'https://www.hearingthings.co/archive/rss/',
-      'https://www.ft.com/myft/following/bc85524b-7be0-4e1f-8171-e13479a74c93.rss',
-      'https://stereogum.com/feed/',
-      'https://www.highsnobiety.com/feeds/rss'
-    ];
 
     const feedItems = [];
     const feedTitles = new Set();
@@ -145,7 +263,7 @@
     const removeImagesFromHTML = html => html.replace(/<img[^>]*>/gi, '');
 
     function getRelativeTime(pubDateString) {
-      const utcDate = new Date(pubDateString + ' UTC');
+      const utcDate = new Date(pubDateString); // ← don't modify string
       const now = new Date();
       const diffMs = now.getTime() - utcDate.getTime();
       const diffSec = Math.floor(diffMs / 1000);
@@ -161,14 +279,13 @@
     }
 
     const fetchFeed = async (url) => {
-      const cacheBuster = `&_=${Date.now()}`;
-      const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}${cacheBuster}`;
       try {
-        const response = await fetch(apiUrl);
+        const response = await fetch(url);
         const data = await response.json();
-        return data.items.map(item => ({
+
+        return data.map(item => ({
           ...item,
-          sourceTitle: data.feed.title
+          sourceTitle: item.sourceTitle || 'Feed'
         }));
       } catch (error) {
         console.error('Error fetching feed:', url, error);
@@ -230,10 +347,10 @@
         div.innerHTML = `
           ${imageUrl ? `<img src="${imageUrl}" alt="Feed Image">` : ''}
           <h2>${item.title}</h2>
-          <p>${descriptionClean}</p>
           <div class="meta">
             <span class="date">${relativeTime}</span>
           </div>
+          <p>${descriptionClean}</p>
           <div class="footer">
             <button class="ghost-btn" onclick="window.open('${item.link}', '_blank')">
   Open
@@ -241,27 +358,65 @@
     <path d="M11 4C11.5523 4 12 4.44772 12 5V12H10V7.41406L4.70703 12.707L3.29297 11.293L8.58594 6H4V4H11Z"/>
   </svg>
 </button>
-            <span class="badge">${item.sourceTitle}</span>
+            <span class="chip source-badge" data-source="${item.sourceTitle}">${item.sourceTitle}</span>
           </div>
         `;
 
         container.appendChild(div);
+
+        div.querySelector('.source-badge')?.addEventListener('click', (e) => {
+          const source = e.target.getAttribute('data-source');
+          if (activeFilters.size === 0) {
+            // "All" was active — now activate only the clicked source
+            activeFilters = new Set([source]);
+          } else if (activeFilters.has(source)) {
+            activeFilters.delete(source);
+          } else {
+            activeFilters.add(source);
+          }
+
+          // If no filters left, treat as "All"
+          if (activeFilters.size === 0) {
+            activeFilters.clear();
+          }
+
+          renderFilterBar();
+          renderFeed();
+        });
       });
     };
 
-    const loadFeeds = async () => {
-      for (const url of feedUrls) {
-        const items = await fetchFeed(url);
-        items.forEach(item => {
-          feedItems.push(item);
-          feedTitles.add(item.sourceTitle);
-        });
-      }
-      renderFilterBar();
-      renderFeed();
-    };
+    fetch('feeds.json')
+      .then(res => res.json())
+      .then(async (config) => {
+        const backend = config.backend;
+        const feeds = config.feeds;
 
-    loadFeeds();
+        for (const feed of feeds) {
+          try {
+            const response = await fetch(`${backend}${encodeURIComponent(feed.url)}`);
+            const items = await response.json();
+
+            items.forEach(item => {
+              feedItems.push({
+                ...item,
+                sourceTitle: feed.title // override with custom title
+              });
+              feedTitles.add(feed.title);
+            });
+          } catch (error) {
+            console.error(`Failed to load feed: ${feed.title}`, error);
+          }
+        }
+
+        renderFilterBar();
+        renderFeed();
+      })
+      .catch(err => {
+        console.error('Failed to load feeds.json:', err);
+        document.getElementById('rss-feed').textContent = 'Failed to load feeds.';
+      });
   </script>
 </body>
+
 </html>

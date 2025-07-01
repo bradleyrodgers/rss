@@ -1,0 +1,13 @@
+{
+  "backend": "https://rss-backend-73g5.onrender.com/feed?url=",
+  "feeds": [
+    {
+      "title": "The Verge",
+      "url": "https://www.theverge.com/rss/index.xml"
+    },
+    {
+      "title": "Stereogum",
+      "url": "https://stereogum.com/feed/"
+    }
+  ]
+}
