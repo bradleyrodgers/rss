@@ -1,21 +1,22 @@
 {
-  "backend": "https://rss-backend-73g5.onrender.com/feed?url=",
+  "backend": https://rss-backend-73g5.onrender.com/feed?url=
+,
   "feeds": [
     {
       "title": "The Verge",
-      "url": "https://www.theverge.com/rss/index.xml"
+      "url": https://www.theverge.com/rss/index.xml
     },
     {
       "title": "Stereogum",
-      "url": "https://stereogum.com/feed/"
+      "url": https://stereogum.com/feed/
     },
     {
       "title": "9to5 Google",
-      "url": "https://9to5google.com/feed/"
+      "url": https://9to5google.com/feed/
     },
     {
       "title": "Mac Rumours",
-      "url": "https://feeds.macrumors.com/MacRumors-All"
+      "url": https://feeds.macrumors.com/MacRumors-All
     }
   ]
 }
