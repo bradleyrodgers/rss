@@ -229,8 +229,7 @@
 
     #category-select:hover,
     #category-select:focus,
-    #category-select:active
-     {
+    #category-select:active {
       background-color: var(--tag-black-bg);
       color: var(--light-fg);
       outline: none;
@@ -440,7 +439,7 @@
       bar.innerHTML = ''; // clear all
       if (select) bar.appendChild(select); // re-add select before chips
 
-      const sources = ['All', ...Array.from(feedTitles)];
+      const sources = Array.from(feedTitles);
 
       sources.forEach(title => {
         const chip = document.createElement('div');
@@ -465,15 +464,12 @@
         }
 
         chip.addEventListener('click', () => {
-          if (title === 'All') {
-            activeFilters.clear();
+          if (activeFilters.has(title)) {
+            activeFilters.delete(title);
           } else {
-            if (activeFilters.has(title)) {
-              activeFilters.delete(title);
-            } else {
-              activeFilters.add(title);
-            }
+            activeFilters.add(title);
           }
+
           renderFilterBar();
           renderFeed();
         });
@@ -621,6 +617,8 @@
               console.error(`Failed to load feed: ${feed.title}`, error);
             }
           }
+
+          feedTitles.forEach(title => activeFilters.add(title));
 
           renderFilterBar();
           renderFeed();

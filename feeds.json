@@ -4,7 +4,7 @@
     {
       "name": "Culture",
       "feeds": [
-        { "title": "Financial Times", "url": "https://www.ft.com/myft/following/bc85524b-7be0-4e1f-8171-e13479a74c93.rss", "color": "blush" },
+        { "title": "HTSI", "url": "https://www.ft.com/myft/following/bc85524b-7be0-4e1f-8171-e13479a74c93.rss", "color": "blush" },
         { "title": "High Snobiety", "url": "https://www.highsnobiety.com/feed/", "color": "pine" },
         { "title": "ACL", "url": "https://www.acl.news/feed", "color": "orange" },
         { "title": "Street Night Live", "url": "https://streetnightlive.substack.com/feed", "color": "plum" },
