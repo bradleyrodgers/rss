@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#EBE9E6">
   <title>RSS Feed</title>
   <style>
     @font-face {
@@ -118,6 +119,65 @@
       font-display: swap;
     }
 
+    :root {
+      --dark-fg: #1E1919;
+      --light-fg: #F7F5F2;
+
+      --tag-blush-bg: #FFAFA5;
+      --tag-blush-fg: var(--dark-fg);
+
+      --tag-red-bg: #FA551E;
+      --tag-red-fg: var(--dark-fg);
+
+      --tag-orange-bg: #FF8C19;
+      --tag-orange-fg: var(--dark-fg);
+
+      --tag-yellow-bg: #FAD24B;
+      --tag-yellow-fg: var(--dark-fg);
+
+      --tag-lime-bg: #B4DC19;
+      --tag-lime-fg: var(--dark-fg);
+
+      --tag-turquoise-bg: #14C8EB;
+      --tag-turquoise-fg: var(--dark-fg);
+
+      --tag-blue-bg: #B4C8E1;
+      --tag-blue-fg: var(--dark-fg);
+
+      --tag-purple-bg: #C8AFF0;
+      --tag-purple-fg: var(--dark-fg);
+
+      --tag-grey-bg: rgba(0, 0, 0, 0.05);
+      --tag-grey-fg: rgba(0, 0, 0, 0.20);
+
+      --tag-black-bg: #1E1919;
+      --tag-black-fg: var(--light-fg);
+
+      --tag-magenta-bg: #CD2F7B;
+      --tag-magenta-fg: var(--light-fg);
+
+      --tag-crimson-bg: #9B0032;
+      --tag-crimson-fg: var(--light-fg);
+
+      --tag-rust-bg: #BE4B0A;
+      --tag-rust-fg: var(--light-fg);
+
+      --tag-teal-bg: #007891;
+      --tag-teal-fg: var(--light-fg);
+
+      --tag-olive-bg: #75781B;
+      --tag-olive-fg: var(--light-fg);
+
+      --tag-pine-bg: #0F503C;
+      --tag-pine-fg: var(--light-fg);
+
+      --tag-plum-bg: #78286E;
+      --tag-plum-fg: var(--light-fg);
+
+      --tag-navy-bg: #283750;
+      --tag-navy-fg: var(--light-fg);
+    }
+
     body {
       font-family: jetbrainsmono;
       font-size: 16px;
@@ -150,6 +210,34 @@
       /* Chrome, Safari, Opera */
     }
 
+    #category-select {
+      padding: 6.5px 24px;
+      border: 1.5px solid #1A1918;
+      border-radius: 99px;
+      font-family: jetbrainsmono, monospace;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 16px;
+      letter-spacing: 1px;
+      text-align: center;
+      text-transform: uppercase;
+      color: #1A1918;
+      background: none;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    #category-select:hover,
+    #category-select:focus,
+    #category-select:active
+     {
+      background-color: var(--tag-black-bg);
+      color: var(--light-fg);
+      outline: none;
+    }
+
+
+
     .chip {
       padding: 8px 24px;
       border-radius: 99px;
@@ -177,7 +265,7 @@
     }
 
     .item {
-      margin-bottom: 120px;
+      margin-bottom: 80px;
     }
 
     .item img {
@@ -194,6 +282,7 @@
       font-family: jetbrainsmono, monospace;
       font-size: 16px;
       font-weight: 700;
+      text-transform: uppercase;
     }
 
     .item p {
@@ -271,7 +360,7 @@
       font-size: 16px;
       font-weight: 400;
       font-family: jetbrainsmono, monospace;
-      margin-top: 4px;
+      margin-top: 8px;
       padding: 0;
       cursor: pointer;
       text-decoration-line: underline;
@@ -283,16 +372,29 @@
 </head>
 
 <body>
-  <div id="filter-bar"></div>
+  <div id="filter-bar">
+    <select id="category-select"></select>
+  </div>
+
   <div class="feed-wrapper">
     <div id="rss-feed">Loading...</div>
   </div>
 
   <script>
+    const allFeeds = [];
+
+    const getTagColors = (colorName) => {
+      const root = getComputedStyle(document.documentElement);
+      const bg = root.getPropertyValue(`--tag-${colorName}-bg`).trim();
+      const fg = root.getPropertyValue(`--tag-${colorName}-fg`).trim();
+      return { bg, fg };
+    };
 
     const feedItems = [];
     const feedTitles = new Set();
+    const feedColors = new Map();
     let activeFilters = new Set(); // empty = "All"
+    let selectedCategory = 'All';
 
     const extractImageFromContent = (content) => {
       const match = content.match(/<img[^>]+src="([^">]+)"/i);
@@ -334,7 +436,9 @@
 
     const renderFilterBar = () => {
       const bar = document.getElementById('filter-bar');
-      bar.innerHTML = '';
+      const select = bar.querySelector('#category-select'); // preserve select
+      bar.innerHTML = ''; // clear all
+      if (select) bar.appendChild(select); // re-add select before chips
 
       const sources = ['All', ...Array.from(feedTitles)];
 
@@ -342,6 +446,20 @@
         const chip = document.createElement('div');
         chip.className = 'chip';
         chip.textContent = title;
+
+        const colorName = feedColors.get(title) || 'gray';
+        const { bg, fg } = getTagColors(colorName);
+
+        if (activeFilters.has(title) || (activeFilters.size === 0 && title === 'All')) {
+          chip.style.backgroundColor = bg;
+          chip.style.color = fg;
+          chip.classList.add('active');
+        } else {
+          chip.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
+          chip.style.color = 'rgba(0, 0, 0, 0.2)';
+          chip.classList.remove('active');
+        }
+
         if (activeFilters.has(title) || (activeFilters.size === 0 && title === 'All')) {
           chip.classList.add('active');
         }
@@ -383,6 +501,9 @@
         const relativeTime = getRelativeTime(item.pubDate);
         const descriptionClean = removeImagesFromHTML(item.description || '');
 
+        const colorName = item.color || 'grey';
+        const { bg, fg } = getTagColors(colorName);
+
         div.innerHTML = `
           ${imageUrl ? `<img src="${imageUrl}" alt="Feed Image">` : ''}
           <h2><a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a></h2>
@@ -392,7 +513,9 @@
           <p class="description">${descriptionClean}</p>
           <button class="toggle-description">Show more</button>
           <div class="footer">
-            <span class="chip source-badge" data-source="${item.sourceTitle}">${item.sourceTitle}</span>
+            <span class="chip source-badge" data-source="${item.sourceTitle}" style="background-color: ${bg}; color: ${fg};">
+              ${item.sourceTitle}
+            </span>
           </div>
         `;
 
@@ -437,28 +560,82 @@
       .then(res => res.json())
       .then(async (config) => {
         const backend = config.backend;
-        const feeds = config.feeds;
+        const groups = config.groups;
 
-        for (const feed of feeds) {
-          try {
-            const response = await fetch(`${backend}${encodeURIComponent(feed.url)}`);
-            const items = await response.json();
+        const select = document.getElementById('category-select');
 
-            items.forEach(item => {
-              feedItems.push({
-                ...item,
-                sourceTitle: feed.title // override with custom title
+        // Clear the dropdown (in case it's reloading)
+        select.innerHTML = '';
+
+        // Add group options
+        groups.forEach((group, index) => {
+          const option = document.createElement('option');
+          option.value = group.name;
+          option.textContent = group.name;
+          select.appendChild(option);
+        });
+
+        groups.forEach(group => {
+          group.feeds.forEach(feed => {
+            feed.group = group.name; // ✅ assign the group name
+            allFeeds.push(feed);
+            feedColors.set(feed.title, feed.color || 'gray');
+          });
+        });
+
+        // Add “All” option last
+        const allOption = document.createElement('option');
+        allOption.value = 'All';
+        allOption.textContent = 'All';
+        select.appendChild(allOption);
+
+        // ✅ Set default category to the first group in the list
+        selectedCategory = groups[0].name;
+        select.value = selectedCategory;
+
+        console.log('Selected category on load:', selectedCategory);
+
+        const loadCategoryFeeds = async () => {
+          feedItems.length = 0;
+          feedTitles.clear();
+
+          const categoryFeeds = selectedCategory === 'All'
+            ? allFeeds
+            : allFeeds.filter(feed => feed.group === selectedCategory);
+
+          for (const feed of categoryFeeds) {
+            try {
+              const response = await fetch(`${backend}${encodeURIComponent(feed.url)}`);
+              const items = await response.json();
+
+              items.forEach(item => {
+                feedItems.push({
+                  ...item,
+                  sourceTitle: feed.title,
+                  color: feed.color,
+                  groupName: feed.group
+                });
+                feedTitles.add(feed.title);
               });
-              feedTitles.add(feed.title);
-            });
-          } catch (error) {
-            console.error(`Failed to load feed: ${feed.title}`, error);
+            } catch (error) {
+              console.error(`Failed to load feed: ${feed.title}`, error);
+            }
           }
-        }
 
-        renderFilterBar();
-        renderFeed();
+          renderFilterBar();
+          renderFeed();
+
+          console.log('Feeds to load:', categoryFeeds.map(f => f.title));
+        };
+
+        document.getElementById('category-select').addEventListener('change', (e) => {
+          selectedCategory = e.target.value;
+          loadCategoryFeeds();
+        });
+
+        loadCategoryFeeds();
       })
+
       .catch(err => {
         console.error('Failed to load feeds.json:', err);
         document.getElementById('rss-feed').textContent = 'Failed to load feeds.';
